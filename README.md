@@ -19,9 +19,10 @@ CI goes green because the witness is gone. The repair kills the evidence, not th
 `main.ts` is a dependency-free Node script (built-ins only). It:
 
 1. Holds the entry line as a constant.
-2. Validates it against a small rule table: not blank, at most 100 characters, single line with no line breaks.
+2. Validates it against a small rule table: not blank, at most 100 characters, no leading or trailing whitespace, single line with no line breaks.
 3. Writes it to `output/entry.txt` with no trailing newline.
 4. Reads the file back and fails if the bytes differ.
+5. Prints the path and the entry length (characters and bytes) when it writes.
 
 `--self-test` checks that each bad input is rejected by the intended rule, that a 100-character entry is accepted, and that the real entry round-trips byte-identical through a temp directory.
 

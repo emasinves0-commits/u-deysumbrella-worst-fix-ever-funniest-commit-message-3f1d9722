@@ -18,6 +18,7 @@ interface Rule {
 const RULES: Rule[] = [
   { id: "not-blank", describe: "entry is blank", fails: (e) => e.trim().length === 0 },
   { id: "max-length", describe: `entry is longer than ${MAX_LENGTH} characters`, fails: (e) => e.length > MAX_LENGTH },
+  { id: "no-edge-whitespace", describe: "entry has leading or trailing whitespace", fails: (e) => e !== e.trim() },
   { id: "single-line", describe: "entry must be a single line", fails: (e) => /[\r\n]/.test(e) },
 ];
 
@@ -43,6 +44,7 @@ function writeEntry(entry: string, dir: string): string {
   writeFileSync(file, entry, "utf8"); // no trailing newline
   const back = readFileSync(file);
   if (!back.equals(Buffer.from(entry, "utf8"))) throw new Error("read-back bytes differ from entry");
+  console.log(`wrote ${file} (${entryLength(entry)})`);
   return file;
 }
 
@@ -51,6 +53,9 @@ function selfTest(): void {
     ["empty", "", "not-blank"],
     ["whitespace only", "   \t ", "not-blank"],
     ["101 characters", "x".repeat(101), "max-length"],
+    ["leading space", " fix: a", "no-edge-whitespace"],
+    ["trailing space", "fix: a ", "no-edge-whitespace"],
+    ["leading tab", "\tfix: a", "no-edge-whitespace"],
     ["embedded LF", "fix: a\nfix: b", "single-line"],
     ["embedded CRLF", "fix: a\r\nb", "single-line"],
     ["trailing newline", "fix: a\n", "single-line"],
@@ -79,6 +84,5 @@ if (process.argv.includes("--self-test")) {
   selfTest();
 } else {
   const outDir = join(dirname(fileURLToPath(import.meta.url)), "output");
-  const file = writeEntry(ENTRY, outDir);
-  console.log(`wrote ${file} (${entryLength(ENTRY)})`);
+  writeEntry(ENTRY, outDir);
 }

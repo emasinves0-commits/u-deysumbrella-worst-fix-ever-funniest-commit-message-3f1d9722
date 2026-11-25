@@ -19,8 +19,10 @@ fix: delete test that asserts user is alive (CI is green now)
 ## Verify
 
 ```sh
-node main.ts              # writes output/entry.txt, reads it back, fails on any byte difference
+node main.ts              # validates, writes output/entry.txt, reads it back, fails on any byte difference, prints the length
 node main.ts --self-test  # rule rejections, 100-character acceptance, temp-dir round trip
 ```
+
+The validation rules are `not-blank`, `max-length` (100), `no-edge-whitespace` and `single-line`.
 
 Do not edit the entry line. It must stay byte-identical.
